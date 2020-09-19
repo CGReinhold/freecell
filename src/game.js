@@ -1,7 +1,7 @@
 'use strict';
 const React = require('react');
 const { useState } = require('react');
-const { Box, Text, useInput, useStdout } = require('ink');
+const { Box, Text, useInput } = require('ink');
 const importJsx = require('import-jsx');
 const Position = importJsx('./components/position');
 const suits = require('./constants/suits');
@@ -9,7 +9,6 @@ const ranks = require('./constants/ranks');
 const generateCards = require('./utils/cardGenerator');
 
 const Game = () => {
-	const { write } = useStdout();
 	const [row, setRow] = useState(0);
 	const [column, setColumn] = useState(0);
 	const [selectedCell, setSelectedCell] = useState({});
@@ -47,19 +46,15 @@ const Game = () => {
 				const newFreeSpace = [...freeSpace];
 				newFreeSpace[column] = popSelectedCard();
 				setFreeSpace(newFreeSpace);
-				setSelectedCell({});
 			} else if (selectedFinalPile() && canUpdateFinalFile()) {
 				const newFinalPile = [...finalPile];
 				newFinalPile[column-4] = popSelectedCard();
 				setFinalPile(newFinalPile);
-				setSelectedCell({});
 			} else if (selectedLastFromColumn() && canAddToFinalOfColumn()) {
 				const updatedCards = [...cards];
-				updatedCards[column].push(popSelectedCard());
-				setSelectedCell({});
-			} else {
-				setSelectedCell({});
+				updatedCards[column].push(...popSelectedGroup());
 			}
+			setSelectedCell({});
 		}
 	}
 
@@ -109,7 +104,10 @@ const Game = () => {
 
 	const selectedFreeSpace = () => row === 0 && column < 4;
 	const selectedFreeSpaceCard = () => selectedFreeSpace() && freeSpace[column].rank !== undefined;
-	const canUpdateFreeSpace = () => freeSpace[column].rank === undefined;
+	const canUpdateFreeSpace = () => {
+		const isNotMiddleCardSelected = selectedCell.row === 0 || selectedCell.row === cards[selectedCell.column].length;
+		return freeSpace[column].rank === undefined && isNotMiddleCardSelected;
+	}
 
 	const selectedFinalPile = () => row === 0 && column > 3;
 	const selectedFinalPileCard = () => selectedFinalPile() && finalPile[column - 4].rank !== undefined;
@@ -132,7 +130,6 @@ const Game = () => {
 		}
 
 		for(let i = row; i < cards[column].length; i++) {
-			write(i +'');
 			if (!isNextRank(cards[column][i], cards[column][i -1])) {
 				return false;
 			}
@@ -142,6 +139,10 @@ const Game = () => {
 	};
 	const canAddToFinalOfColumn = () => {
 		const lastCardOfColumn = getLastCardOfColumn(column);
+		if (lastCardOfColumn.rank === undefined) {
+			return true;
+		}
+
 		const selectedCard = getSelectedCard();
 		const nextRank = isNextRank(selectedCard, lastCardOfColumn);
 		const oppositSuit = isOpositeSuite(lastCardOfColumn, selectedCard);
@@ -166,6 +167,14 @@ const Game = () => {
 			setCards(newCards);
 		}
 		return card;
+	}
+
+	const popSelectedGroup = () => {
+		const newCards = [...cards];
+		const group = newCards[selectedCell.column].slice(selectedCell.row - 1, newCards[selectedCell.column].length);
+		newCards[selectedCell.column] = newCards[selectedCell.column].splice(0, selectedCell.row - 1);
+		setCards(newCards);
+		return group;
 	}
 
 	const getSelectedCard = () => {

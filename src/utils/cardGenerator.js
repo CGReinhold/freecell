@@ -2,8 +2,8 @@ const suits = require('../constants/suits');
 const ranks = require('../constants/ranks');
 
 const generateCards = () => {
-  const shuffledCards = getAllCards().reverse();
-  // const shuffledCards = shuffle(cards);
+  const cards = getAllCards();
+  const shuffledCards = shuffle(cards);
   return divideInGroups(shuffledCards);
 };
 

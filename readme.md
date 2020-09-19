@@ -1,7 +1,8 @@
 # freecell
 
-> Simple CLI freecell game created using [ink](https://github.com/vadimdemedes/ink)
+> Simplified CLI freecell game version created with [ink](https://github.com/vadimdemedes/ink)
 
+![freecell](assets/freecell.gif)
 
 ## CLI
 

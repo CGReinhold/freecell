@@ -1,6 +1,6 @@
 'use strict';
 const React = require('react');
-const { Box, Text, Spacer } = require('ink');
+const { Box, Text } = require('ink');
 const suits = require('../constants/suits');
 
 const Card = ({ borderColor, rank, suit, marginTop }) => {

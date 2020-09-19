@@ -4,7 +4,7 @@ const importJsx = require('import-jsx');
 const { Box } = require('ink');
 const Card = importJsx('./card');
 
-const Position = ({ card, height, hovered, selected, marginTop }) => {
+const Position = ({ card, hovered, selected, marginTop }) => {
   const borderColor = selected ? 'green' : (hovered ? 'yellow' : 'gray');
 
   if (card) {
