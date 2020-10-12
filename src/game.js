@@ -242,7 +242,7 @@ const Game = () => {
 
 	return (
 		<>
-			<Text>← ↑ → ↓ to move and [space] to select the cards</Text>
+			<Text>← ↑ → ↓ to move and [enter] to select the cards</Text>
 			<Box marginX={1} flexDirection="column" >
 				<Box>
 					<Position hovered={isHovered(0, 0)} selected={isSelected(0, 0)} card={{...freeSpace[0]}} />
