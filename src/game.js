@@ -241,22 +241,25 @@ const Game = () => {
 	}
 
 	return (
-		<Box marginX={1} flexDirection="column" >
-			<Box>
-				<Position hovered={isHovered(0, 0)} selected={isSelected(0, 0)} card={{...freeSpace[0]}} />
-				<Position hovered={isHovered(0, 1)} selected={isSelected(0, 1)} card={{...freeSpace[1]}} />
-				<Position hovered={isHovered(0, 2)} selected={isSelected(0, 2)} card={{...freeSpace[2]}} />
-				<Position hovered={isHovered(0, 3)} selected={isSelected(0, 3)} card={{...freeSpace[3]}} />
-				<Text>  </Text>
-				<Position hovered={isHovered(0, 4)} selected={isSelected(0, 4)} card={{...finalPile[0]}} />
-				<Position hovered={isHovered(0, 5)} selected={isSelected(0, 5)} card={{...finalPile[1]}} />
-				<Position hovered={isHovered(0, 6)} selected={isSelected(0, 6)} card={{...finalPile[2]}} />
-				<Position hovered={isHovered(0, 7)} selected={isSelected(0, 7)} card={{...finalPile[3]}} />
+		<>
+			<Text>← ↑ → ↓ to move and [space] to select the cards</Text>
+			<Box marginX={1} flexDirection="column" >
+				<Box>
+					<Position hovered={isHovered(0, 0)} selected={isSelected(0, 0)} card={{...freeSpace[0]}} />
+					<Position hovered={isHovered(0, 1)} selected={isSelected(0, 1)} card={{...freeSpace[1]}} />
+					<Position hovered={isHovered(0, 2)} selected={isSelected(0, 2)} card={{...freeSpace[2]}} />
+					<Position hovered={isHovered(0, 3)} selected={isSelected(0, 3)} card={{...freeSpace[3]}} />
+					<Text>  </Text>
+					<Position hovered={isHovered(0, 4)} selected={isSelected(0, 4)} card={{...finalPile[0]}} />
+					<Position hovered={isHovered(0, 5)} selected={isSelected(0, 5)} card={{...finalPile[1]}} />
+					<Position hovered={isHovered(0, 6)} selected={isSelected(0, 6)} card={{...finalPile[2]}} />
+					<Position hovered={isHovered(0, 7)} selected={isSelected(0, 7)} card={{...finalPile[3]}} />
+				</Box>
+				<Box marginX={1}>
+					{renderTableau()}
+				</Box>
 			</Box>
-			<Box marginX={1}>
-				{renderTableau()}
-			</Box>
-		</Box>
+		</>
 	);
 }
 

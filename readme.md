@@ -1,14 +1,11 @@
 # freecell
 
-> Simplified CLI freecell game version created with [ink](https://github.com/vadimdemedes/ink)
+Simplified CLI freecell game built with React and [ink](https://github.com/vadimdemedes/ink), and inspired by [this Solitaire version](https://github.com/zephraph/solitaire)
 
 ![freecell](assets/freecell.gif)
 
-## CLI
+## How to play
 
 ```
-$ freecell --help
-
-  Usage
-    $ freecell
+npx freecell
 ```

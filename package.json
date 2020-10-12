@@ -1,6 +1,14 @@
 {
 	"name": "freecell",
-	"version": "0.0.0",
+	"version": "1.0.1",
+	"description": "CLI Freecell game built with React",
+	"author": {
+		"name": "Cleyson Reinhold",
+		"url": "https://cgreinhold.dev"
+	},
+	"repository": {
+		"url": "https://github.com/CGReinhold/freecell"
+	},
 	"license": "MIT",
 	"bin": "cli.js",
 	"engines": {
