@@ -1,6 +1,6 @@
 {
 	"name": "freecell",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "CLI Freecell game built with React",
 	"author": {
 		"name": "Cleyson Reinhold",
@@ -20,7 +20,7 @@
 	},
 	"files": [
 		"cli.js",
-		"ui.js"
+		"src/"
 	],
 	"dependencies": {
 		"import-jsx": "^4.0.0",
