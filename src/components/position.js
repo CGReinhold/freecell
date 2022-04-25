@@ -6,9 +6,18 @@ const Card = importJsx('./card');
 
 const Position = ({ card, hovered, selected, marginTop }) => {
   const borderColor = selected ? 'green' : (hovered ? 'yellow' : 'gray');
+  const borderStyle = hovered ? 'double' : 'round';
 
   if (card) {
-    return <Card rank={card.rank} suit={card.suit} borderColor={borderColor} marginTop={marginTop} />;
+    return (
+      <Card
+        rank={card.rank}
+        suit={card.suit}
+        borderStyle={borderStyle}
+        borderColor={borderColor}
+        marginTop={marginTop}
+      />
+    );
   }
 
   return (
@@ -16,8 +25,7 @@ const Position = ({ card, hovered, selected, marginTop }) => {
       width={10}
       height={7}
       paddingX={1}
-      borderStyle="single"
-      borderStyle="round"
+      borderStyle={borderStyle}
       flexDirection="column"
       borderColor={borderColor}
       marginTop={marginTop}

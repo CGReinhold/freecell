@@ -1,9 +1,17 @@
 const suits = require('../constants/suits');
 const ranks = require('../constants/ranks');
+const fs = require("fs")
 
 const generateCards = () => {
+  const data = fs.readFileSync('cards.json', 'utf8');
+
+  if (data) return divideInGroups(JSON.parse(data));
+
   const cards = getAllCards();
   const shuffledCards = shuffle(cards);
+
+  fs.writeFileSync("cards.json", JSON.stringify(shuffledCards));
+
   return divideInGroups(shuffledCards);
 };
 
