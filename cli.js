@@ -1,17 +1,28 @@
 #!/usr/bin/env node
 'use strict';
 const React = require('react');
-const importJsx = require('import-jsx');
-const {render} = require('ink');
-const meow = require('meow');
+const { render } = require('ink');
 
-const game = importJsx('./src/game');
+const Game = require('./src/game');
+const { version } = require('./package.json');
 
-const cli = meow(`
-	Usage
-	  $ freecell
+const args = process.argv.slice(2);
 
-	And enjoy the game
-`);
+if (args.includes('--help') || args.includes('-h')) {
+  console.log(`
+  Usage
+    $ freecell
 
-render(React.createElement(game, cli.flags));
+  ← ↑ → ↓ to move and [enter] to select the cards
+
+  Version ${version}
+  `);
+  process.exit(0);
+}
+
+if (args.includes('--version') || args.includes('-v')) {
+  console.log(version);
+  process.exit(0);
+}
+
+render(React.createElement(Game));

@@ -1,37 +1,27 @@
+'use strict';
 const suits = require('../constants/suits');
 const ranks = require('../constants/ranks');
-const fs = require("fs")
-
-const generateCards = () => {
-  const data = fs.readFileSync('cards.json', 'utf8');
-
-  if (data) return divideInGroups(JSON.parse(data));
-
-  const cards = getAllCards();
-  const shuffledCards = shuffle(cards);
-
-  fs.writeFileSync("cards.json", JSON.stringify(shuffledCards));
-
-  return divideInGroups(shuffledCards);
-};
 
 const getAllCards = () => {
-  return Object.keys(suits).map(suit => {
-    return Object.keys(ranks).map(rank => {
-      return { rank: ranks[rank], suit: suits[suit] };
-    });
-  }).flat();
+  return Object.values(suits).flatMap(suit => {
+    return Object.values(ranks).map(rank => ({ rank, suit }));
+  });
 };
 
-const shuffle = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+const shuffle = (cards, random = Math.random) => {
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
   }
-  return array;
+
+  return cards;
 };
 
-const divideInGroups = (cards) => {
+const divideInGroups = cards => {
+  if (cards.length !== 52) {
+    throw new Error(`A Freecell deal needs 52 cards, received ${cards.length}`);
+  }
+
   return [
     cards.slice(0, 7),
     cards.slice(7, 14),
@@ -42,6 +32,19 @@ const divideInGroups = (cards) => {
     cards.slice(40, 46),
     cards.slice(46, 52),
   ];
-}
+};
+
+const generateCards = (options = {}) => {
+  const { deck, random } = options;
+
+  if (deck) {
+    return divideInGroups(deck.map(card => ({ ...card })));
+  }
+
+  return divideInGroups(shuffle(getAllCards(), random));
+};
 
 module.exports = generateCards;
+module.exports.getAllCards = getAllCards;
+module.exports.shuffle = shuffle;
+module.exports.divideInGroups = divideInGroups;

@@ -1,176 +1,242 @@
-
 'use strict';
 const generateCards = require('../utils/cardGenerator');
 const { isNextRank, isOpositeSuite } = require('../utils/cardUtils');
-const suits = require('../constants/suits');
 const ranks = require('../constants/ranks');
 
-// TODO:
-// - implementar ctrl-z
-// - implementar função para jogar todas cartas validas para o final pile
-// - adicionar typescript
-// - adicionar testes
-// - mover para uma coluna expecífica utilizando apenas números
-// - retirar cartas do finalPile
-// - colocar mensagem de vitória caso conclua o jogo
+const isCard = card => Boolean(card && card.rank && card.suit);
 
-const defaultState = {
+const emptySlots = () => [{}, {}, {}, {}];
+
+const createInitialState = (cards = generateCards()) => ({
   row: 0,
   column: 0,
-  selectedCell: {},
-  cards: generateCards(),
-  freeSpace: [{}, {}, {}, {}],
-  finalPile: [{}, {}, {}, {}],
-}
+  selectedCell: null,
+  cards,
+  freeSpace: emptySlots(),
+  finalPile: emptySlots(),
+});
 
-const tableauReducer = (state, action) => {
-  const columnLength = state.cards[state.column].length;
-  const isFreeSpace = state.row === 0 && state.column < 4;
-  const isFreeSpaceCard = isFreeSpace && Boolean(state.freeSpace[state.column].rank);
-  const isFinalPile = state.row === 0 && state.column > 3;
-  const isFinalPileCard = isFinalPile && Boolean(state.finalPile[state.column - 4].rank);
-  const hasSequenceBelow = isOnSequency(state.row, state.cards[state.column]);
+const defaultState = createInitialState();
 
-  switch (action.type) {
-    case 'up': {
-      const newRow = state.row === 0 ? columnLength || 1 : state.row - 1;
-      return { ...state, row: newRow };
-    }
-    case 'down': {
-      const newRow = state.row === (columnLength || 1) ? 0 : state.row + 1;
-      return { ...state, row: newRow };
-    }
-    case 'right': {
-      const newColumn = state.column === 7 ? 0 : state.column + 1;
-      const newRow = state.cards[newColumn].length < state.row ? state.cards[newColumn].length || 1 : state.row;
-      return { ...state, column: newColumn, row: newRow };
-    }
-    case 'left': {
-      const newColumn = state.column === 0 ? 7 : state.column - 1;
-      const newRow = state.cards[newColumn].length < state.row ? state.cards[newColumn].length || 1 : state.row;
-      return { ...state, column: newColumn, row: newRow }
-    }
-    case 'select': {
-      if (!isFreeSpaceCard && !isFinalPileCard && !hasSequenceBelow) {
-        return { ...state, selectedCell: {} };
-      }
+const isSequence = cards => {
+  if (!cards.length) return false;
 
-      return { ...state, selectedCell: { row: state.row, column: state.column } };
-    }
-    case 'unselect': {
-      return { ...state, selectedCell: {} };
-    }
-    case 'move': {
-      if (!canMove(state)) return state;
-      
-      const { selectedCell, freeSpace, finalPile, cards } = state;
+  for (let index = 1; index < cards.length; index++) {
+    const previous = cards[index - 1];
+    const current = cards[index];
 
-      if (selectedCell.row === undefined) return state;
-
-      const selectedCards = getAllSelectedCards(state);
-
-      const newFreeSpace = freeSpace.map((current, index) => {
-        if (selectedCell.row !== 0 && state.row !== 0) return current;
-        if (selectedCell.row === 0 && selectedCell.column === index) return {};
-
-        if (state.row === 0 && state.column === index && !current.rank) return selectedCards[0] || {};
-
-        return current;
-      });
-
-      const newFinalPile = finalPile.map((current, index) => {
-        if (selectedCell.row !== 0 && state.row !== 0) return current;
-        if (selectedCell.row === 0 && selectedCell.column - 4 === index) return {};
-
-        if (state.row === 0 && state.column - 4 === index) return selectedCards[0] || {};
-
-        return current;
-      });
-
-      const newCards = cards.map((column, columnIndex) => {
-        if (selectedCell.column !== columnIndex && state.column !== columnIndex) return column;
-
-        if (selectedCell.column === columnIndex && selectedCell.row !== 0) return column.splice(0, column.length - selectedCards.length);
-
-        if (state.row === 0) return column;
-
-        if (state.column === columnIndex) return [...column, ...selectedCards];
-
-        return column;
-      });
-
-      return {
-        ...state,
-        selectedCell: {},
-        freeSpace: newFreeSpace,
-        finalPile: newFinalPile,
-        cards: newCards,
-      };
-    }
-    default: {
-      throw new Error('Invalid');
-    }
-  }
-}
-
-const isOnSequency = (rowIndex, column) => {
-  if (column.length < rowIndex) return false;
-  if (column.length === rowIndex) return true;
-
-  let currentCard = column[rowIndex - 1];
-
-  for (let i = rowIndex; i < column.length; i++) {
-    if (!isNextRank(column[i], currentCard) || !isOpositeSuite(currentCard, column[i])) {
-      return false;
-    }
-
-    currentCard = column[i];
+    if (!isCard(previous) || !isCard(current)) return false;
+    if (!isNextRank(current, previous) || !isOpositeSuite(current, previous)) return false;
   }
 
   return true;
 };
 
-const getAllSelectedCards = ({ selectedCell, cards, freeSpace, finalPile }) => {
-  if (selectedCell.row === 0 && selectedCell.column < 4) return [freeSpace[selectedCell.column]];
+const getSelectedCards = ({ selectedCell, cards, freeSpace, finalPile }) => {
+  if (!selectedCell) return [];
 
-  if (selectedCell.row === 0 && selectedCell.column > 3) return [finalPile[selectedCell.column - 4]];
+  if (selectedCell.row === 0) {
+    if (selectedCell.column < 4) {
+      const card = freeSpace[selectedCell.column];
+      return isCard(card) ? [card] : [];
+    }
 
-  return cards[selectedCell.column].slice(selectedCell.row - 1);
-}
+    const card = finalPile[selectedCell.column - 4];
+    return isCard(card) ? [card] : [];
+  }
 
+  const column = cards[selectedCell.column];
 
-const canMove = (state) => {
+  if (!column || selectedCell.row < 1 || selectedCell.row > column.length) return [];
+
+  return column.slice(selectedCell.row - 1);
+};
+
+const isSelectable = state => {
+  const { row, column, cards, freeSpace } = state;
+
+  if (row === 0) {
+    if (column < 4) return isCard(freeSpace[column]);
+
+    return false;
+  }
+
+  const columnCards = cards[column];
+
+  if (!columnCards || row < 1 || row > columnCards.length) return false;
+
+  return isSequence(columnCards.slice(row - 1));
+};
+
+const canPlaceOnFoundation = (foundationCard, card) => {
+  if (!isCard(foundationCard)) return card.rank === ranks.ace;
+
+  return foundationCard.suit === card.suit && isNextRank(foundationCard, card);
+};
+
+const maxMovableCards = (state, movingToEmptyColumn) => {
+  const { cards, freeSpace } = state;
+  const emptyFreeCells = freeSpace.filter(cell => !isCard(cell)).length;
+
+  let emptyColumns = cards.filter(column => column.length === 0).length;
+
+  if (movingToEmptyColumn) emptyColumns--;
+
+  emptyColumns = Math.max(0, emptyColumns);
+
+  return (emptyFreeCells + 1) * (2 ** emptyColumns);
+};
+
+const canMove = state => {
   const { row, column, selectedCell, cards, freeSpace, finalPile } = state;
 
-  if (selectedCell.row === undefined) return false;
-  
-  const currentColumnLength = cards[column].length;
-  const lastCardOnColumn = currentColumnLength === 0 ? null : cards[column][currentColumnLength - 1]
-  const isMovingGroup = selectedCell.row > 0 && cards[selectedCell.column].length > selectedCell.row;
-  const selectedCards = getAllSelectedCards(state);
-  const selectedCard = selectedCards[0];
+  if (!selectedCell) return false;
+  if (selectedCell.row === 0 && selectedCell.column >= 4) return false;
+  if (selectedCell.row === row && selectedCell.column === column) return false;
+
+  const selectedCards = getSelectedCards(state);
+
+  if (!selectedCards.length || !selectedCards.every(isCard)) return false;
+  if (!isSequence(selectedCards)) return false;
+
+  const isMovingGroup = selectedCards.length > 1;
 
   if (row === 0) {
     if (isMovingGroup) return false;
 
-    if (column < 4) return !freeSpace[column].rank;
-    if (!finalPile[column - 4].rank) return selectedCard.rank === ranks.ace;
-    
-    return selectedCard.suit === finalPile[column - 4].suit && isNextRank(finalPile[column - 4], selectedCard);
+    if (column < 4) return !isCard(freeSpace[column]);
+
+    return canPlaceOnFoundation(finalPile[column - 4], selectedCards[0]);
   }
 
-  const freeSpaceCount = freeSpace.reduce((acc, space) => space.rank ? acc + 1 : acc, 0);
-  let emptyColumnCount = cards.reduce((acc, column) => column.length === 0 ? acc + 1 : acc , 0);
-  if (!lastCardOnColumn) emptyColumnCount--;
+  if (selectedCell.row > 0 && selectedCell.column === column) return false;
 
-  let maxAllowedGroupMovement = (freeSpaceCount + emptyColumnCount) * (emptyColumnCount + 1)
+  const destination = cards[column] || [];
 
-  if (selectedCard.length > maxAllowedGroupMovement) return false;
+  if (destination.length === 0) {
+    return selectedCards.length <= maxMovableCards(state, true);
+  }
 
-  return !lastCardOnColumn || (isNextRank(selectedCard, lastCardOnColumn) && isOpositeSuite(selectedCard, lastCardOnColumn));
-}
+  const destinationCard = destination[destination.length - 1];
+
+  return (
+    isNextRank(selectedCards[0], destinationCard) &&
+    isOpositeSuite(selectedCards[0], destinationCard) &&
+    selectedCards.length <= maxMovableCards(state, false)
+  );
+};
+
+const moveCards = state => {
+  const { selectedCell, cards, freeSpace, finalPile } = state;
+  const selectedCards = getSelectedCards(state);
+
+  const sourceIsTopRow = selectedCell.row === 0;
+  const destinationIsTopRow = state.row === 0;
+
+  let nextCards = cards;
+  let nextFreeSpace = freeSpace;
+  let nextFinalPile = finalPile;
+
+  if (!sourceIsTopRow) {
+    nextCards = nextCards.map((column, index) => {
+      if (index !== selectedCell.column) return column;
+
+      return column.slice(0, column.length - selectedCards.length);
+    });
+  }
+
+  if (!destinationIsTopRow) {
+    nextCards = nextCards.map((column, index) => {
+      if (index !== state.column) return column;
+
+      return [...column, ...selectedCards];
+    });
+  }
+
+  if (sourceIsTopRow) {
+    nextFreeSpace = nextFreeSpace.map((cell, index) => {
+      return index === selectedCell.column ? {} : cell;
+    });
+  }
+
+  if (destinationIsTopRow) {
+    if (state.column < 4) {
+      nextFreeSpace = nextFreeSpace.map((cell, index) => {
+        return index === state.column ? selectedCards[0] : cell;
+      });
+    } else {
+      nextFinalPile = nextFinalPile.map((cell, index) => {
+        return index === state.column - 4 ? selectedCards[0] : cell;
+      });
+    }
+  }
+
+  return {
+    ...state,
+    selectedCell: null,
+    cards: nextCards,
+    freeSpace: nextFreeSpace,
+    finalPile: nextFinalPile,
+  };
+};
+
+const tableauReducer = (state, action) => {
+  const columnLength = state.cards[state.column].length;
+
+  switch (action.type) {
+    case 'up': {
+      const newRow = state.row === 0 ? columnLength || 1 : Math.max(0, state.row - 1);
+      return { ...state, row: newRow };
+    }
+
+    case 'down': {
+      const newRow = state.row >= (columnLength || 1) ? 0 : state.row + 1;
+      return { ...state, row: newRow };
+    }
+
+    case 'right': {
+      const newColumn = state.column === 7 ? 0 : state.column + 1;
+      const maxRow = state.cards[newColumn].length || 1;
+      return { ...state, column: newColumn, row: Math.min(state.row, maxRow) };
+    }
+
+    case 'left': {
+      const newColumn = state.column === 0 ? 7 : state.column - 1;
+      const maxRow = state.cards[newColumn].length || 1;
+      return { ...state, column: newColumn, row: Math.min(state.row, maxRow) };
+    }
+
+    case 'select': {
+      if (!isSelectable(state)) return state;
+
+      return { ...state, selectedCell: { row: state.row, column: state.column } };
+    }
+
+    case 'unselect': {
+      if (!state.selectedCell) return state;
+
+      return { ...state, selectedCell: null };
+    }
+
+    case 'move': {
+      if (!canMove(state)) return state;
+
+      return moveCards(state);
+    }
+
+    default: {
+      throw new Error(`Invalid action: ${action.type}`);
+    }
+  }
+};
 
 module.exports = {
   tableauReducer,
-  defaultState
+  defaultState,
+  createInitialState,
+  canMove,
+  getSelectedCards,
+  isSelectable,
+  isSequence,
+  maxMovableCards,
 };
