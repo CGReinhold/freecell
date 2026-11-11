@@ -7,6 +7,10 @@ const useTableau = () => {
   const [state, dispatch] = useReducer(tableauReducer, defaultState);
 
   useInput((input, key) => {
+    if (key.ctrl && input === 'z') {
+      dispatch({ type: 'undo' });
+    }
+
     if (key.return || input === ' ') {
       if (!state.selectedCell) {
         dispatch({ type: 'select' });

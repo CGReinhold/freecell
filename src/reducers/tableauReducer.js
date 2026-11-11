@@ -14,6 +14,7 @@ const createInitialState = (cards = generateCards()) => ({
   cards,
   freeSpace: emptySlots(),
   finalPile: emptySlots(),
+  history: [],
 });
 
 const defaultState = createInitialState();
@@ -126,6 +127,14 @@ const canMove = state => {
   );
 };
 
+const createHistoryEntry = state => ({
+  cards: state.cards,
+  freeSpace: state.freeSpace,
+  finalPile: state.finalPile,
+  row: state.selectedCell ? state.selectedCell.row : state.row,
+  column: state.selectedCell ? state.selectedCell.column : state.column,
+});
+
 const moveCards = state => {
   const { selectedCell, cards, freeSpace, finalPile } = state;
   const selectedCards = getSelectedCards(state);
@@ -221,7 +230,31 @@ const tableauReducer = (state, action) => {
     case 'move': {
       if (!canMove(state)) return state;
 
-      return moveCards(state);
+      const moved = moveCards(state);
+
+      return {
+        ...moved,
+        history: [...(state.history || []), createHistoryEntry(state)],
+      };
+    }
+
+    case 'undo': {
+      const history = state.history || [];
+
+      if (!history.length) return state;
+
+      const previous = history[history.length - 1];
+
+      return {
+        ...state,
+        row: previous.row,
+        column: previous.column,
+        selectedCell: null,
+        cards: previous.cards,
+        freeSpace: previous.freeSpace,
+        finalPile: previous.finalPile,
+        history: history.slice(0, -1),
+      };
     }
 
     default: {

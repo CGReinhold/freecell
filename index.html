@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="rgb(18, 18, 18)" />
+  <meta name="description" content="Freecell para o terminal, feito com React e Ink, e uma versão jogável no navegador." />
+  <meta property="og:image" content="../../thumb.png" />
+  <meta property="og:title" content="Freecell" />
+  <meta property="og:description" content="Um Freecell para o terminal, agora também jogável no navegador." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://cgreinhold.com/projetos/freecell/" />
+  <link rel="icon" type="image/x-icon" href="../../favicon.ico" />
+  <title>Freecell</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="app">
+    <nav class="topbar" aria-label="Navegação">
+      <a class="chip" href="../index.html">← Projetos</a>
+      <a class="chip" href="https://github.com/CGReinhold/freecell" target="_blank" rel="noreferrer">
+        GitHub ↗
+      </a>
+    </nav>
+
+    <header class="header">
+      <p class="eyebrow">Projeto</p>
+      <h1 class="header__title">Freecell</h1>
+      <p class="header__subtitle">
+        Um jogo de cartas para o terminal, feito com React e Ink. A mesma lógica de
+        movimentos agora também roda aqui no navegador.
+      </p>
+      <div class="actions">
+        <a class="button button--primary" href="#jogar">Jogar no navegador</a>
+        <a class="button" href="https://github.com/CGReinhold/freecell" target="_blank" rel="noreferrer">
+          Ver no GitHub
+        </a>
+      </div>
+    </header>
+
+    <section class="about" aria-labelledby="about-heading">
+      <div class="about__text">
+        <h2 class="about__title" id="about-heading">Sobre o projeto</h2>
+        <p>
+          O Freecell começou como um exercício de interface no terminal: cartas desenhadas
+          em ASCII, navegação pelas setas e seleção com <strong>Enter</strong> ou
+          <strong>espaço</strong>. Cada partida recebe um baralho novo.
+        </p>
+        <p>
+          A versão web reaproveita as regras do jogo — sequências alternando as cores,
+          quatro células livres e quatro fundações por naipe — e troca o terminal por uma
+          mesa no navegador. Você pode jogar com o teclado ou com o mouse.
+        </p>
+        <pre class="about__code"><code>npx freecell</code></pre>
+        <p>
+          Requer Node.js 18 ou superior. O código, os testes e as instruções completas
+          estão no <a href="https://github.com/CGReinhold/freecell" target="_blank" rel="noreferrer">repositório do projeto</a>.
+        </p>
+      </div>
+
+      <figure class="about__figure">
+        <img src="./assets/freecell.gif" alt="Animação da versão original do Freecell rodando no terminal" />
+        <figcaption>A versão original, jogável no terminal.</figcaption>
+      </figure>
+    </section>
+
+    <section class="game" id="jogar" aria-labelledby="game-heading">
+      <div class="game__bar">
+        <h2 class="game__heading" id="game-heading">Jogar agora</h2>
+        <p class="game__status" id="game-status" role="status" aria-live="polite"></p>
+        <div class="game__actions">
+          <button class="button" id="undo" type="button" disabled>Desfazer</button>
+          <button class="button" id="new-game" type="button">Novo jogo</button>
+        </div>
+      </div>
+
+      <div
+        class="board"
+        id="board"
+        role="group"
+        tabindex="0"
+        aria-label="Mesa de Freecell"
+        aria-describedby="game-instructions"
+      ></div>
+
+      <p class="game__hint" id="game-instructions">
+        Use as setas <kbd>←</kbd> <kbd>↑</kbd> <kbd>→</kbd> <kbd>↓</kbd> para navegar,
+        <kbd>Enter</kbd> ou <kbd>espaço</kbd> para selecionar e mover, e <kbd>Esc</kbd>
+        para cancelar. <kbd>Ctrl</kbd>+<kbd>Z</kbd> (ou <kbd>⌘</kbd>+<kbd>Z</kbd>)
+        desfaz o último movimento. Também funciona clicando nas cartas.
+      </p>
+    </section>
+
+    <details class="rules">
+      <summary>Como jogar Freecell</summary>
+      <ul>
+        <li>Leve todas as 52 cartas para as quatro fundações, uma por naipe, do ás ao rei.</li>
+        <li>Na mesa, as cartas descem em sequência e alternando as cores (vermelho e preto).</li>
+        <li>Use as quatro células livres no topo como espaço temporário.</li>
+        <li>Sequências inteiras podem ser movidas se houver células livres e colunas vazias suficientes.</li>
+        <li>Cartas nas fundações não podem voltar para a mesa.</li>
+      </ul>
+    </details>
+
+    <footer class="footer">
+      <span>Feito com React, Ink e uma boa dose de ASCII.</span>
+      <span>
+        <a href="../index.html">← Voltar aos projetos</a>
+        ·
+        <a href="https://github.com/CGReinhold/freecell" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </span>
+    </footer>
+  </main>
+
+  <script src="./browser-game.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>

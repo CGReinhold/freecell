@@ -179,6 +179,78 @@ test('moving the last card to a free cell updates both cells without mutating th
   assert.deepEqual(original, snapshot);
 });
 
+test('undo restores the board from before the last move', () => {
+  const initial = stateWith([
+    [card('5', '♣'), card('4', '♦')],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+  ], {
+    row: 0,
+    column: 1,
+    selectedCell: { row: 2, column: 0 },
+  });
+
+  const moved = tableauReducer(initial, { type: 'move' });
+  assert.equal(moved.history.length, 1);
+
+  const undone = tableauReducer(moved, { type: 'undo' });
+
+  assert.deepEqual(undone.cards, initial.cards);
+  assert.deepEqual(undone.freeSpace, initial.freeSpace);
+  assert.deepEqual(undone.finalPile, initial.finalPile);
+  assert.equal(undone.selectedCell, null);
+  assert.equal(undone.row, 2);
+  assert.equal(undone.column, 0);
+  assert.equal(undone.history.length, 0);
+});
+
+test('undo with no history is a no-op', () => {
+  const state = createInitialState();
+
+  assert.equal(tableauReducer(state, { type: 'undo' }), state);
+});
+
+test('undo walks back through multiple moves', () => {
+  const initial = stateWith([
+    [card('5', '♣'), card('4', '♦')],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+  ], {
+    row: 0,
+    column: 1,
+    selectedCell: { row: 2, column: 0 },
+  });
+
+  let state = tableauReducer(initial, { type: 'move' });
+  const afterFirstMove = state;
+
+  state = { ...state, row: 0, column: 0, selectedCell: { row: 1, column: 0 } };
+  state = tableauReducer(state, { type: 'move' });
+
+  assert.equal(state.history.length, 2);
+  assert.deepEqual(state.cards[0], []);
+
+  state = tableauReducer(state, { type: 'undo' });
+  assert.deepEqual(state.cards, afterFirstMove.cards);
+  assert.deepEqual(state.freeSpace, afterFirstMove.freeSpace);
+  assert.equal(state.history.length, 1);
+
+  state = tableauReducer(state, { type: 'undo' });
+  assert.deepEqual(state.cards, initial.cards);
+  assert.deepEqual(state.freeSpace, initial.freeSpace);
+  assert.equal(state.history.length, 0);
+});
+
 test('moving a card from a free cell to a tableau clears the free cell', () => {
   const state = stateWith([
     [card('8', '♥')],
@@ -435,7 +507,7 @@ const getSelectablePositions = state => {
 
 test('random actions keep every card in exactly one valid location', () => {
   const random = createSeededRandom(12345);
-  const actions = ['up', 'down', 'left', 'right', 'select', 'unselect', 'move'];
+  const actions = ['up', 'down', 'left', 'right', 'select', 'unselect', 'move', 'undo'];
   let state = createSeededState(12345);
   const initialCards = state.cards.flat().map(({ rank, suit }) => `${rank}${suit}`);
   let selections = 0;

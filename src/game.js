@@ -92,7 +92,7 @@ const Game = () => {
   return React.createElement(
     React.Fragment,
     null,
-    React.createElement(Text, null, '← ↑ → ↓ to move and [enter] to select the cards'),
+    React.createElement(Text, null, '← ↑ → ↓ to move and [enter] to select the cards · [ctrl+z] to undo'),
     React.createElement(
       Box,
       { marginX: 1, flexDirection: 'column' },

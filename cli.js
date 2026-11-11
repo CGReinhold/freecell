@@ -14,6 +14,7 @@ if (args.includes('--help') || args.includes('-h')) {
     $ freecell
 
   ← ↑ → ↓ to move and [enter] to select the cards
+  Ctrl+Z to undo the last move
 
   Version ${version}
   `);
