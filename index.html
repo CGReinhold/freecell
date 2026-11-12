@@ -22,17 +22,13 @@
   <main class="app">
     <nav class="topbar" aria-label="Navegação">
       <a class="chip" href="../index.html">← Projetos</a>
-      <a class="chip" href="https://github.com/CGReinhold/freecell" target="_blank" rel="noreferrer">
-        GitHub ↗
-      </a>
     </nav>
 
     <header class="header">
       <p class="eyebrow">Projeto</p>
       <h1 class="header__title">Freecell</h1>
       <p class="header__subtitle">
-        Um jogo de cartas para o terminal, feito com React e Ink. A mesma lógica de
-        movimentos agora também roda aqui no navegador.
+        Um implementação do famoso jogo Freecell para o terminal, feito com React e Ink.
       </p>
       <div class="actions">
         <a class="button button--primary" href="#jogar">Jogar no navegador</a>
@@ -46,14 +42,21 @@
       <div class="about__text">
         <h2 class="about__title" id="about-heading">Sobre o projeto</h2>
         <p>
-          O Freecell começou como um exercício de interface no terminal: cartas desenhadas
-          em ASCII, navegação pelas setas e seleção com <strong>Enter</strong> ou
-          <strong>espaço</strong>. Cada partida recebe um baralho novo.
+          Fiz esse projeto em 2020 como um exercício de interface no terminal, desenhando cartas
+          em ASCII, com navegação pelas setas e seleção com <strong>Enter</strong> ou
+          <strong>espaço</strong> fara jogar o famoso Freecell.
         </p>
         <p>
-          A versão web reaproveita as regras do jogo — sequências alternando as cores,
-          quatro células livres e quatro fundações por naipe — e troca o terminal por uma
-          mesa no navegador. Você pode jogar com o teclado ou com o mouse.
+          O ano agora é 2026 e esse tipo de projeto é trivial de se fazer com os avanços mais recentes de IA.
+        <p>
+          Ainda mantenho aqui essa página, para que continue na memória de projetos passados.
+        </p>
+        <p>
+          Para exemplo de comparação, abaixo está um clone web do projeto, criado em alguns minutos com uma IA gratuita.
+        </p>
+        <p>
+          Para jogar a versão do terminal, basta rodar o comando abaixo.
+        </p>
         </p>
         <pre class="about__code"><code>npx freecell</code></pre>
         <p>
@@ -105,15 +108,6 @@
         <li>Cartas nas fundações não podem voltar para a mesa.</li>
       </ul>
     </details>
-
-    <footer class="footer">
-      <span>Feito com React e Ink.</span>
-      <span>
-        <a href="../index.html">← Voltar aos projetos</a>
-        ·
-        <a href="https://github.com/CGReinhold/freecell" target="_blank" rel="noreferrer">GitHub ↗</a>
-      </span>
-    </footer>
   </main>
 
   <script src="./browser-game.js"></script>
