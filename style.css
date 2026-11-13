@@ -2,7 +2,7 @@
   font-family: 'Departure Mono Regular';
   src: local('Departure Mono Regular'),
        local('Hoover'),
-       url('../../fonts/DepartureMono-1.500/DepartureMono-Regular.otf') format('opentype');
+       url('../../../fonts/DepartureMono-1.500/DepartureMono-Regular.otf') format('opentype');
   font-display: swap;
 }
 
@@ -102,6 +102,10 @@ code {
   text-transform: uppercase;
   transition: background-color 80ms linear;
 }
+
+.chip.back-button { padding: 0; border: 0; background: transparent; min-height: 0; }
+.chip.back-button:hover { background: transparent; }
+.chip.back-button img { display: block; height: 32px; width: auto; image-rendering: pixelated; }
 
 .chip:hover {
   background: rgba(255, 255, 255, 0.1);
